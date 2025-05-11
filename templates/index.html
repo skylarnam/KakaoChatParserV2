@@ -121,7 +121,10 @@
                                         <label for="endDate">종료 날짜:</label>
                                         <input type="date" class="form-control" id="endDate">
                                     </div>
-                                    <button type="submit" class="btn btn-primary mt-2">검색</button>
+                                    <div class="d-flex gap-2">
+                                        <button type="submit" class="btn btn-primary mt-2">검색</button>
+                                        <button type="button" class="btn btn-secondary mt-2" onclick="copyInactiveUsers()">Copy</button>
+                                    </div>
                                 </form>
                                 <div class="error-message" id="dateError"></div>
                             </div>

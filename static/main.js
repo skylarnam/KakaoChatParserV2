@@ -236,4 +236,61 @@ if (typeof hasData !== 'undefined' && hasData) {
     loadUserList();
     loadInactiveUsers(30);
     setActiveInactiveBtn(30);
+}
+
+// 비활성 사용자 복사 기능
+function copyInactiveUsers() {
+    const container = document.getElementById('inactiveUsers');
+    const badges = container.getElementsByClassName('badge-outline-primary');
+    
+    if (badges.length === 0) {
+        alert('복사할 비활성 사용자가 없습니다.');
+        return;
+    }
+
+    // 현재 활성화된 버튼 확인
+    const activeButton = document.querySelector('.btn-group .btn.active');
+    let dateRangeText;
+    
+    if (activeButton) {
+        // 30/60/90일 버튼이 활성화된 경우
+        const days = parseInt(activeButton.id.split('-')[2]);
+        const endDate = new Date();
+        const startDate = new Date();
+        startDate.setDate(endDate.getDate() - days);
+        
+        dateRangeText = `[${startDate.toISOString().split('T')[0]} ~ ${endDate.toISOString().split('T')[0]} 사이의 비활성 사용자]`;
+    } else {
+        // 날짜 선택기를 사용한 경우
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value || new Date().toISOString().split('T')[0];
+        dateRangeText = `[${startDate} ~ ${endDate} 사이의 비활성 사용자]`;
+    }
+
+    let text = dateRangeText + '\n';
+    // 사용자 목록을 배열로 변환하고 정렬
+    const userList = Array.from(badges)
+        .map(badge => badge.textContent)
+        .sort((a, b) => {
+            // 영어와 한글 구분을 위한 정규식
+            const isEnglishA = /^[a-zA-Z]/.test(a);
+            const isEnglishB = /^[a-zA-Z]/.test(b);
+            
+            // 영어가 한글보다 먼저 오도록 정렬
+            if (isEnglishA && !isEnglishB) return -1;
+            if (!isEnglishA && isEnglishB) return 1;
+            
+            // 같은 종류(영어/한글)끼리는 알파벳 순으로 정렬
+            return a.localeCompare(b, 'ko');
+        });
+    
+    // 정렬된 목록을 텍스트로 변환
+    text += userList.join('\n');
+
+    navigator.clipboard.writeText(text).then(() => {
+        alert('비활성 사용자 목록이 클립보드에 복사되었습니다.');
+    }).catch(err => {
+        console.error('클립보드 복사 실패:', err);
+        alert('클립보드 복사에 실패했습니다.');
+    });
 } 
