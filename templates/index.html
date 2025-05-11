@@ -134,6 +134,62 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- 활발한 사용자 통계 -->
+                <div class="col-md-6 mb-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title">활발한 사용자 통계</h5>
+                            <div class="btn-group mt-2" role="group">
+                                <button type="button" class="btn btn-outline-primary" id="btn-active-30" onclick="loadActiveUserStats(30); setActiveStatsBtn(30)">최근 30일</button>
+                                <button type="button" class="btn btn-outline-primary" id="btn-active-60" onclick="loadActiveUserStats(60); setActiveStatsBtn(60)">최근 60일</button>
+                                <button type="button" class="btn btn-outline-primary" id="btn-active-90" onclick="loadActiveUserStats(90); setActiveStatsBtn(90)">최근 90일</button>
+                            </div>
+                            <div class="date-picker-container">
+                                <form onsubmit="loadActiveUserStatsByDate(event)">
+                                    <div class="form-group">
+                                        <label for="activeStartDate">시작 날짜:</label>
+                                        <input type="date" class="form-control" id="activeStartDate" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="activeEndDate">종료 날짜:</label>
+                                        <input type="date" class="form-control" id="activeEndDate">
+                                    </div>
+                                    <button type="submit" class="btn btn-primary mt-2">검색</button>
+                                </form>
+                                <div class="error-message" id="activeDateError"></div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div id="activeUserStats" class="text-center">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h6>평균 나이</h6>
+                                        <p id="avgAge" class="h4">-</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6>성비 (남:여)</h6>
+                                        <p id="genderRatio" class="h4">-</p>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-md-6">
+                                        <h6>남성 평균 나이</h6>
+                                        <p id="maleAvgAge" class="h4">-</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6>여성 평균 나이</h6>
+                                        <p id="femaleAvgAge" class="h4">-</p>
+                                    </div>
+                                </div>
+                                <div class="mt-3">
+                                    <h6>활발한 사용자 수</h6>
+                                    <p id="activeUserCount" class="h4">-</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

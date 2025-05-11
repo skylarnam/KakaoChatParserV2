@@ -226,18 +226,6 @@ function loadInactiveUsersByDate(event) {
         });
 }
 
-// 초기 데이터 로드
-const hasData = JSON.parse(document.getElementById('dashboardContent') ? 'true' : 'false');
-if (typeof hasData !== 'undefined' && hasData) {
-    document.getElementById('uploadSection').style.display = 'none';
-    document.getElementById('dashboardContent').style.display = 'block';
-    loadMonthlyStats();
-    loadChatTrend();
-    loadUserList();
-    loadInactiveUsers(30);
-    setActiveInactiveBtn(30);
-}
-
 // 비활성 사용자 복사 기능
 function copyInactiveUsers() {
     const container = document.getElementById('inactiveUsers');
@@ -293,4 +281,77 @@ function copyInactiveUsers() {
         console.error('클립보드 복사 실패:', err);
         alert('클립보드 복사에 실패했습니다.');
     });
+}
+
+// 활발한 사용자 통계 버튼 active 관리
+function setActiveStatsBtn(days) {
+    ['30', '60', '90'].forEach(d => {
+        document.getElementById('btn-active-' + d).classList.remove('active');
+    });
+    if (days) {
+        document.getElementById('btn-active-' + days).classList.add('active');
+    }
+}
+
+// 활발한 사용자 통계 로드 (일수 기준)
+function loadActiveUserStats(days) {
+    setActiveStatsBtn(days);
+    fetch(`/api/active_user_stats/${days}`)
+        .then(response => response.json())
+        .then(data => {
+            updateActiveUserStats(data);
+        })
+        .catch(error => {
+            console.error('활발한 사용자 통계 로드 실패:', error);
+            alert('활발한 사용자 통계를 불러오는데 실패했습니다.');
+        });
+}
+
+// 활발한 사용자 통계 로드 (날짜 범위 기준)
+function loadActiveUserStatsByDate(event) {
+    event.preventDefault();
+    setActiveStatsBtn(null);
+    const startDate = document.getElementById('activeStartDate').value;
+    const endDate = document.getElementById('activeEndDate').value || new Date().toISOString().split('T')[0];
+    const errorElement = document.getElementById('activeDateError');
+
+    fetch(`/api/active_user_stats_by_date?start_date=${startDate}&end_date=${endDate}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                errorElement.textContent = data.error;
+                errorElement.style.display = 'block';
+                return;
+            }
+            errorElement.style.display = 'none';
+            updateActiveUserStats(data);
+        })
+        .catch(error => {
+            console.error('활발한 사용자 통계 로드 실패:', error);
+            errorElement.textContent = '데이터를 불러오는 중 오류가 발생했습니다.';
+            errorElement.style.display = 'block';
+        });
+}
+
+// 활발한 사용자 통계 업데이트
+function updateActiveUserStats(data) {
+    document.getElementById('avgAge').textContent = data.avg_age ? data.avg_age.toFixed(1) + '세' : '-';
+    document.getElementById('genderRatio').textContent = data.gender_ratio || '-';
+    document.getElementById('maleAvgAge').textContent = data.male_avg_age ? data.male_avg_age.toFixed(1) + '세' : '-';
+    document.getElementById('femaleAvgAge').textContent = data.female_avg_age ? data.female_avg_age.toFixed(1) + '세' : '-';
+    document.getElementById('activeUserCount').textContent = data.active_user_count || '-';
+}
+
+// 초기 데이터 로드
+const hasData = JSON.parse(document.getElementById('dashboardContent') ? 'true' : 'false');
+if (typeof hasData !== 'undefined' && hasData) {
+    document.getElementById('uploadSection').style.display = 'none';
+    document.getElementById('dashboardContent').style.display = 'block';
+    loadMonthlyStats();
+    loadChatTrend();
+    loadUserList();
+    loadInactiveUsers(30);
+    setActiveInactiveBtn(30);
+    loadActiveUserStats(30);  // 활발한 사용자 통계 초기 로드
+    setActiveStatsBtn(30);
 } 

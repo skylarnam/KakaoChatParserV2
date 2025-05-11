@@ -5,7 +5,7 @@ import os
 from werkzeug.utils import secure_filename
 from extensions import db
 from models import ChatMessage
-from services import get_left_users, process_csv_file, get_inactive_users
+from services import get_left_users, process_csv_file, get_inactive_users, get_active_user_stats
 
 @app.route('/')
 def index():
@@ -125,4 +125,20 @@ def user_stats(username):
         'active_days': active_days,
         'avg_messages': avg_messages,
         'daily_stats': [{'date': str(stat.date), 'count': stat.count} for stat in daily_stats]
-    }) 
+    })
+
+@app.route('/api/active_user_stats/<int:days>')
+def active_user_stats(days):
+    cutoff_date = datetime.now() - timedelta(days=days)
+    return get_active_user_stats(cutoff_date)
+
+@app.route('/api/active_user_stats_by_date')
+def active_user_stats_by_date():
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date', datetime.now().strftime('%Y-%m-%d'))
+    try:
+        start_date = datetime.strptime(start_date, '%Y-%m-%d')
+        end_date = datetime.strptime(end_date, '%Y-%m-%d')
+    except (ValueError, TypeError):
+        return jsonify({'error': '올바른 날짜 형식이 아닙니다 (YYYY-MM-DD)'}), 400
+    return get_active_user_stats(start_date, end_date) 
