@@ -45,7 +45,9 @@ def monthly_stats():
     left_users = get_left_users()
     result = db.session.query(
         ChatMessage.user,
-        db.func.count(ChatMessage.id).label('message_count')
+        db.func.count(ChatMessage.id).label('message_count'),
+        db.func.sum(db.func.length(ChatMessage.message)).label('total_length'),
+        db.func.avg(db.func.length(ChatMessage.message)).label('avg_length')
     ).filter(
         ChatMessage.date >= month_ago,
         ~ChatMessage.user.in_(left_users)
@@ -54,7 +56,12 @@ def monthly_stats():
     ).order_by(
         db.func.count(ChatMessage.id).desc()
     ).limit(10).all()
-    return jsonify([{'user': r.user, 'count': r.message_count} for r in result])
+    return jsonify([{
+        'user': r.user,
+        'count': r.message_count,
+        'total_length': r.total_length,
+        'avg_length': round(r.avg_length, 1) if r.avg_length else 0
+    } for r in result])
 
 @app.route('/api/inactive_users/<int:days>')
 def inactive_users(days):

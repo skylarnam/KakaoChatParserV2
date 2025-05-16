@@ -40,7 +40,17 @@ function loadMonthlyStats() {
                         data: data.map(item => item.count),
                         backgroundColor: 'rgba(54, 162, 235, 0.7)',
                         borderColor: 'rgba(54, 162, 235, 1)',
-                        borderWidth: 1
+                        borderWidth: 1,
+                        yAxisID: 'y'
+                    },
+                    {
+                        label: '평균 메시지 길이',
+                        data: data.map(item => item.avg_length),
+                        type: 'line',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        borderWidth: 2,
+                        yAxisID: 'y1'
                     }]
                 },
                 options: {
@@ -49,9 +59,25 @@ function loadMonthlyStats() {
                     scales: {
                         y: {
                             beginAtZero: true,
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
                             title: {
                                 display: true,
                                 text: '메시지 수'
+                            }
+                        },
+                        y1: {
+                            beginAtZero: true,
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: {
+                                display: true,
+                                text: '평균 메시지 길이'
+                            },
+                            grid: {
+                                drawOnChartArea: false
                             }
                         },
                         x: {
@@ -69,9 +95,6 @@ function loadMonthlyStats() {
                                 top: 10,
                                 bottom: 30
                             }
-                        },
-                        legend: {
-                            display: false
                         }
                     }
                 }
